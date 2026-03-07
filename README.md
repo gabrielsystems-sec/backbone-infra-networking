@@ -36,7 +36,7 @@ Registro de tratamento de bloqueios de dispositivo e identificação de metadado
 - [ ] Configuração de IP Estático e Hostnames.
 - [ ] Troubleshooting de rede (`MTR`, `fping`).
 
-#### **[PRÓXIMO] Serviços e Boot do Sistema**
+#### **Serviços e Boot do Sistema**
 - [ ] **DNS Master/Slave (BIND9):** Resolução de nomes.
 - [ ] **DHCP & FTP:** Automação e transferência de arquivos.
 - [ ] **GRUB:** Personalização e segurança no bootloader.
