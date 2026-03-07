@@ -1,4 +1,4 @@
-# 🚀 Repo 4: System Health, Observability & Tuning 🛡️
+# 🚀 Repo 4: Backbone Infrastructure & Networking 🛡️
 
 Repositório dedicado à construção e administração de infraestrutura Linux. Este laboratório documenta a implementação de sistemas escaláveis e resilientes utilizando **Rocky Linux 9** e **Ubuntu Server**.
 
