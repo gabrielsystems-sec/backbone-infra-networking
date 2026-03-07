@@ -5,7 +5,7 @@ Repositório dedicado à construção e administração de infraestrutura Linux.
 ### 📊 Status e Validação Real
 * **Status:** 🛠️ Laboratório em evolução ativa (Atualizado em 07/03/2026).
 * **Ambiente:** Terminal `rockygab` (Validação em tempo real).
-* **Evidência de Sessão:** [Clique aqui para ver o CAT deste README direto no terminal](./evidencias_repo4/readme-structure-backbone-v1.png)
+* **Evidência de Sessão:** [Clique aqui para ver o CAT deste README direto no terminal](./docs/assets/readme-structure-backbone-v1.png)
 
 ---
 
@@ -15,11 +15,11 @@ Repositório dedicado à construção e administração de infraestrutura Linux.
 Simulação de cenário crítico de esgotamento de disco em ambiente de produção.
 * **Problema:** Volume `lv_backups` atingiu 100% de ocupação (1.00 GiB).
 * **Solução:** Expansão dinâmica via `lvextend` e redimensionamento online de metadados XFS no Rocky Linux.
-* **Evidências:** [Ver metadados do XFS](./evidencias_repo4/xfs-growfs-success-metadata-lv-backups.png) | [Verificação final df -h](./evidencias_repo4/df-h-final-verification-lv-backups-1.1G.png)
+* **Evidências:** [Ver metadados do XFS](./docs/assets/xfs-growfs-success-metadata-lv-backups.png) | [Verificação final df -h](./docs/assets/df-h-final-verification-lv-backups-1.1G.png)
 
 #### 2. Troubleshooting de Kernel e Hardware
 Registro de tratamento de bloqueios de dispositivo e identificação de metadados durante o particionamento.
-* **Evidência Técnica:** [Ver alerta do fdisk](./evidencias_repo4/fdisk-warning-disk-in-use-sdc.png)
+* **Evidência Técnica:** [Ver alerta do fdisk](./docs/assets/fdisk-warning-disk-in-use-sdc.png)
 
 ---
 
