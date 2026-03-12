@@ -107,7 +107,11 @@ Provisionamento dos serviços de borda e transporte do Backbone Atlas.
 Para garantir a escalabilidade e a alta disponibilidade, implementei scripts de automação:
 
 * **[setup_backbone_storage.sh](./scripts/setup_backbone_storage.sh):** Provisionamento automático de RAID 1, VG, LV e montagem de File System.
-* **[monitor_backbone_health.sh](./scripts/monitor_backbone_health.sh):** Script de monitoramento preventivo que verifica integridade do RAID, espaço em disco e auto-recuperação de serviços (Self-healing).
+* **[monitor_backbone_health.sh](./scripts/monitor_backbone_health.sh):** Verificação de integridade do RAID e auto-recuperação de serviços (Self-healing).
+* **[lvm_snapshot_backup.sh](./scripts/lvm_snapshot_backup.sh):** Gestão de Snapshots LVM para garantir rollback rápido antes de alterações críticas.
+* **[network_backup_manager.sh](./scripts/network_backup_manager.sh):** Backup automatizado das configurações de interfaces e escopos DHCP.
+* **[backbone_service_check.sh](./scripts/backbone_service_check.sh):** Validador de conectividade e resolução DNS para garantir a saúde do Backbone.
+* **[raid_integrity_check.sh](./scripts/raid_integrity_check.sh):** Auditoria específica de integridade de arrays RAID e monitoramento de discos falhos.
 
 ## Lab Setup (Autenticidade Garantida)
 * **Ambiente:** Terminal \`rockygab\`
