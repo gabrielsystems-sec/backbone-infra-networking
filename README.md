@@ -56,7 +56,7 @@ Cenário real de tratamento de incidente em storage crítico.
 
 ### 📸 Evidências do Incidente:
 * **O Incidente:** ![RAID Degradado](./docs/assets/sre-incident-raid-degradation.png)
-* **A Resolução:** ![Snapshot e Rebuild](./docs/assets/sre-resolution-lvm-snapshot-recovery.png)
+* **A Resolução:** ![Snapshot e Rebuild](./docs/assets/sre-troubleshoot-lvm-raid-resilience.png)
 
 ---
 
