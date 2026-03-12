@@ -4,14 +4,14 @@
 # Finalidade: Criacao de Snapshots LVM para backup preventivo
 # ---------------------------------------------------------
 
-VG_NAME="vg_dados" # Ajuste para o seu Volume Group
-LV_NAME="lv_backup"
+VG_NAME="vg_dados"
+LV_NAME="lv_backups"
 SNAP_NAME="snap_preventivo_$(date +%Y%m%d)"
 
 echo "--- [Iniciando Snapshot LVM] ---"
 
 # Criando snapshot de 1GB (ajustável)
-sudo lvcreate -L 1G -s -n $SNAP_NAME /dev/$VG_NAME/$LV_NAME
+sudo lvcreate -L 100M -s -n $SNAP_NAME /dev/$VG_NAME/$LV_NAME
 
 if [ $? -eq 0 ]; then
     echo "[SUCESSO] Snapshot $SNAP_NAME criado."
