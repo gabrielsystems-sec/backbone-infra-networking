@@ -6,9 +6,21 @@ Repositório dedicado à construção e administração de infraestrutura Linux 
 
 ## 🛠️ Stack Tecnológica & Topologia
 * **Distribuições:** Rocky Linux 9 & Ubuntu Server
-* **Armazenamento Avançado:** RAID 1 (Mirroring), RAID 10 (Striping + Mirroring) e LVM2.
-* **Segurança:** GRUB2 (Hardening com PBKDF2).
-* **Serviços Core:** BIND9 (DNS), ISC DHCP, Dovecot (Mail), ProFTPD.
+* **Armazenamento:** RAID 1, RAID 10 e LVM2
+* **Segurança:** GRUB2 (Hardening com PBKDF2)
+
+### Topologia da Rede
+![Diagrama de Backbone](./docs/assets/backbone-topology-diagram.png)
+
+### Endereçamento e Funções
+| Serviço | Interface | Rede/Volume | Função |
+| :--- | :--- | :--- | :--- |
+| **DHCP/DNS Server** | eth1 | 192.168.10.0/24 | Gestão de Identidade e IPs da Rede |
+| **Mirroring Storage** | md1 | RAID 1 (2 Discos) | Dados Críticos e Redundância |
+| **Performance Cluster**| md127| RAID 10 (4 Discos)| Alta Performance e Tolerância a Falhas |
+| **LVM Snapshots** | vg_dados| lv_backups | Salvaguarda de Dados (Point-in-Time) |
+
+---
 
 ### Endereçamento e Funções
 | Serviço | Interface | Rede/Volume | Função |
