@@ -1,58 +1,55 @@
 # Repo 4: Backbone Infrastructure & Networking 🛡️
 
-Repositório dedicado à construção e administração de infraestrutura Linux avançada. Este laboratório documenta a implementação de serviços críticos, escaláveis e resilientes utilizando **Rocky Linux 9 (Enterprise Ready)** e **Ubuntu Server (Nativo)**.
+Repositório dedicado à construção e administração de infraestrutura Linux avançada. Este laboratório documenta a implementação de serviços críticos, escaláveis e resilientes utilizando **Rocky Linux 9 (Enterprise Ready)** e **Ubuntu Server**.
 
 ### Status e Validação Real
-* **Status:** 🟢 Laboratório em evolução ativa (Atualizado em 10/03/2026).
-* **Ambiente:** Terminal `rockygab` (Autenticidade garantida em tempo real).
-* **Evidência de Sessão:** [[Clique aqui para ver o CAT deste README direto no terminal]](./docs/assets/readme-structure-backbone-v1.png)
+* **Status:** ✅ Módulos de Infraestrutura e Hardening Concluídos (Versão 1.0).
+* **Ambiente:** Terminal `rockygab` (Autenticidade garantida via evidências dinâmicas).
+* **Evidência de Sessão:** [[Clique aqui para ver o CAT deste README direto no terminal]](./docs/assets/readme-structure-backbone-v2.png)
 
 ---
 
-### 📂 Módulos de Implementação e Casos de Uso
+### 📂 Módulos de Implementação e Defesa (Blue Team Focus)
 
 #### 1. Gestão de Endereçamento Dinâmico (DHCP Server)
-Implementação de um servidor DHCP autoritativo para gestão centralizada de IPs na rede local, evitando conflitos e garantindo persistência.
-* **Problema:** Necessidade de automatizar a entrega de IPs em uma rede segmentada, mantendo o controle sobre dispositivos críticos.
-* **Solução:** Configuração do `dhcpd` com escopo definido (`192.168.1.150` - `192.168.1.180`) e validação rigorosa de sintaxe antes do deploy.
+Implementação de um servidor DHCP autoritativo para gestão centralizada de rede local.
+* **Foco em Segurança:** Controle de escopo para evitar esgotamento de IPs e garantia de persistência para dispositivos de monitoramento.
 * **Evidências:** * [Definição do Escopo e Parâmetros de Rede](./docs/assets/01-atlas-dhcp-config-definition.png)
-    * [Validação de Sintaxe e Serviço Operacional (Active/Running)](./docs/assets/02-atlas-dhcp-validation-and-status.png)
+    * [Validação de Sintaxe e Serviço Operacional](./docs/assets/02-atlas-dhcp-validation-and-status.png)
 
-#### 2. LVM e Escalabilidade de Armazenamento (Hot-Resize)
-Simulação de cenário crítico de esgotamento de disco em ambiente de produção.
-* **Problema:** Volume `lv_backups` atingiu 100% de ocupação (1.00 GiB).
-* **Solução:** Expansão dinâmica via `lvextend` e redimensionamento online de metadados XFS no Rocky Linux.
-* **Evidências:** * [Ver metadados do XFS](./docs/assets/xfs-growfs-success-metadata-lv-backups.png) 
-    * [Verificação final df -h](./docs/assets/df-h-final-verification-lv-backups-1.1G.png)
+#### 2. Armazenamento Resiliente e Alta Disponibilidade (RAID 1 & LVM)
+Implementação do pilar de **Disponibilidade (CIA Triad)** através de redundância de hardware e gestão de volumes lógicos.
+* **Cenário RAID 1:** Configuração de espelhamento via software (`mdadm`) com simulação real de falha de disco e reconstrução (rebuild) sem downtime.
+* **Cenário LVM:** Expansão dinâmica de volumes (`lvextend`) em resposta a alertas de ocupação crítica no `lv_backups`.
+* **Evidências Técnicas:**
+    * [Status de Saúde do RAID 1 (Active Sync)](./docs/assets/mdadm-raid1-active-detail.png)
+    * [Simulação de Falha e Processo de Rebuild/Recovery](./docs/assets/mdadm-raid1-recovery-rebuild.png)
+    * [Expansão de File System Online (XFS Growfs)](./docs/assets/xfs-growfs-success-metadata-lv-backups.png)
 
-#### 3. Troubleshooting de Kernel e Hardware
-Registro de tratamento de bloqueios de dispositivo e identificação de metadados durante o particionamento.
-* **Evidência Técnica:** [Ver alerta do fdisk](./docs/assets/fdisk-warning-disk-in-use-sdc.png)
+#### 3. Hardening de Bootloader (GRUB Security)
+Proteção da camada pré-SO para impedir acessos físicos não autorizados e ataques de escalonamento de privilégios via modo de edição do kernel.
+* **Implementação:** Proteção do GRUB com autenticação obrigatória utilizando hash criptográfico **PBKDF2**.
+* **Evidências:**
+    * [Geração de Hash Criptográfico para Usuário Admin](./docs/assets/grub-security-config-pbkdf2.png)
+    * [Update de Configuração em Ambiente UEFI (Rocky Linux)](./docs/assets/grub-mkconfig-uefi-update.png)
 
----
-
-### 🗺️ Roadmap de Evolução Técnica (Checklist de Carreira)
-
-#### 🧱 Camada de Dados e Redundância
-- [x] LVM2: Gerenciamento de PV, VG e LV.
-- [x] Expansão online de File Systems (XFS).
-- [ ] **RAID 1 (Espelhamento):** Configuração de redundância física.
-- [ ] **OpenZFS:** Implementação de sistemas de arquivos avançados.
-
-#### 🌐 Conectividade e Redes Enterprise
-- [x] Gestão de rede via CLI (`nmcli` / `nmtui`).
-- [x] Configuração de IP Estático e Hostnames.
-- [x] Troubleshooting de rede (`MTR`, `fping`).
-- [x] **DHCP Server:** Automação de endereçamento.
-
-#### ⚙️ Serviços e Boot do Sistema
-- [ ] **DNS Master/Slave (BIND9):** Resolução de nomes (Iniciando Seção 21).
-- [ ] **FTP Server:** Transferência segura de arquivos.
-- [ ] **GRUB:** Personalização e segurança no bootloader.
+> ⚠️ **Nota de Hardening:** As chaves (hashes) exibidas nas capturas de tela do GRUB foram geradas para fins estritamente didáticos. Em um ambiente de produção, tais segredos jamais seriam expostos, seguindo as diretrizes de Gestão de Ativos.
 
 ---
 
-### 🛠️ Lab Setup (Setup Profissional)
-* **Terminal:** `rockygab` (Garante a autenticidade das evidências).
-* **S.O.:** Rocky Linux 9 (RHEL Family) e Ubuntu Server (Nativo).
+### 🗺️ Roadmap de Evolução Técnica (Concluído)
+
+- [x] **LVM2:** Provisionamento e Hot-Resize de volumes.
+- [x] **RAID 1 (Mirroring):** Resiliência contra falhas de hardware.
+- [x] **DHCP & Networking:** Automação de infraestrutura de rede.
+- [x] **GRUB Hardening:** Segurança física e controle de boot.
+- [x] **Troubleshooting de Kernel:** Tratamento de bloqueios e identificação de metadados (`fdisk/lsblk`).
+
+---
+
+### 🛠️ Lab Setup (Enterprise Standards)
+* **S.O. Primário:** Rocky Linux 9 (RHEL Family - Estabilidade Corporativa).
 * **Hypervisor:** Oracle VM VirtualBox.
+* **Metodologia:** Documentação contínua de erros e soluções (Troubleshooting-first).
+
+---
