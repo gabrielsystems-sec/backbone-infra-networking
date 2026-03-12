@@ -13,7 +13,7 @@ Repositório dedicado à construção e administração de infraestrutura Linux 
 
 ---
 
-## ## 1. Gestão de Endereçamento Dinâmico (DHCP Server)
+## 1. Gestão de Endereçamento Dinâmico (DHCP Server)
 Implementação de um servidor DHCP autoritativo para gestão centralizada e automatizada de rede local.
 
 * **Foco em Segurança:** Controle de escopo para evitar esgotamento de IPs e garantia de persistência para ativos críticos.
@@ -33,7 +33,7 @@ dhcpd -t -cf /etc/dhcp/dhcpd.conf
 
 ---
 
-## ## 2. Armazenamento Resiliente e Alta Disponibilidade (RAID 1 & LVM)
+## 2. Armazenamento Resiliente e Alta Disponibilidade (RAID 1 & LVM)
 Implementação do pilar de **Disponibilidade (CIA Triad)** através de redundância de hardware e gestão de volumes lógicos.
 
 ### 2.1. Cenário de Falha e Recuperação (RAID 1)
@@ -54,7 +54,7 @@ Implementação do pilar de **Disponibilidade (CIA Triad)** através de redundâ
 
 ---
 
-## ## 3. Post-Mortem: Troubleshooting de Kernel e Discos (SRE)
+## 3. Post-Mortem: Troubleshooting de Kernel e Discos (SRE)
 Diagnóstico de falhas reais capturadas durante a manipulação de infraestrutura de blocos.
 
 ### Diagnóstico e Resolução
@@ -73,7 +73,7 @@ Diagnóstico de falhas reais capturadas durante a manipulação de infraestrutur
 
 ---
 
-## ## 4. Hardening de Bootloader (GRUB2 Security)
+## 4. Hardening de Bootloader (GRUB2 Security)
 Proteção da camada pré-SO contra acessos físicos e escalonamento de privilégios via modo de edição do kernel.
 
 * **Metodologia:** Implementação de autenticação obrigatória via hash criptográfico **PBKDF2**.
@@ -88,7 +88,7 @@ Proteção da camada pré-SO contra acessos físicos e escalonamento de privilé
 
 ---
 
-## ## 5. Conectividade e Mensageria (DNS, Mail & FTP)
+## 5. Conectividade e Mensageria (DNS, Mail & FTP)
 Provisionamento dos serviços de borda e transporte do Backbone Atlas.
 
 <details>
@@ -103,7 +103,13 @@ Provisionamento dos serviços de borda e transporte do Backbone Atlas.
 
 ---
 
-## ## 🏁 Lab Setup (Autenticidade Garantida)
+## Automações de Infraestrutura (IaC & SRE)
+Para garantir a escalabilidade e a alta disponibilidade, implementei scripts de automação:
+
+* **[setup_backbone_storage.sh](./scripts/setup_backbone_storage.sh):** Provisionamento automático de RAID 1, VG, LV e montagem de File System.
+* **[monitor_backbone_health.sh](./scripts/monitor_backbone_health.sh):** Script de monitoramento preventivo que verifica integridade do RAID, espaço em disco e auto-recuperação de serviços (Self-healing).
+
+## Lab Setup (Autenticidade Garantida)
 * **Ambiente:** Terminal \`rockygab\`
 * **Prova de Sessão:** ![CAT README](./docs/assets/readme-structure-backbone-v2.png)
 
