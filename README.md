@@ -1,10 +1,10 @@
-# Repo 4: Backbone Infrastructure & Networking 🛡️
+# Backbone Infrastructure & Networking 🛡️
 
-Repositório dedicado à construção e administração de infraestrutura Linux avançada. Este laboratório documenta a implementação de serviços críticos, escaláveis e resilientes utilizando **Rocky Linux 9 (Enterprise Ready)** e **Ubuntu Server**.
+Repositório dedicado à construção e administração de infraestrutura Linux avançada. Este laboratório documenta a implementação de serviços críticos, escaláveis e resilientes utilizando **Rocky Linux 9 (Enterprise Ready)** e **Ubuntu Server (Máquina)**.
 
 ---
 
-## 🛠️ Stack Tecnológica & Topologia
+## Stack Tecnológica & Topologia
 * **Distribuições:** Rocky Linux 9 & Ubuntu Server
 * **Armazenamento:** RAID 1, RAID 10 e LVM2
 * **Segurança:** GRUB2 (Hardening com PBKDF2)
@@ -97,7 +97,7 @@ Vetores de ataque físicos (Direct Access) permitindo que agentes maliciosos que
 
 ---
 
-## 🤖 Automações de Infraestrutura (Scripts Bash)
+## Automações de Infraestrutura (Scripts Bash)
 
 Scripts desenvolvidos para garantir a operabilidade e manutenibilidade do Backbone:
 
