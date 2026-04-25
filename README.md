@@ -1,112 +1,142 @@
 # Backbone Infrastructure & Networking 🛡️
 
-Repositório dedicado à construção e administração de infraestrutura Linux avançada. Este laboratório documenta a implementação de serviços críticos, escaláveis e resilientes utilizando **Rocky Linux 9 (Enterprise Ready)** e **Ubuntu Server (Máquina)**.
+Repositório focado na camada de missão crítica da infraestrutura. Este laboratório documenta a implementação de um **Backbone resiliente**, focado em **Continuidade de Negócio (BCP)**, alta disponibilidade de armazenamento (RAID) e governança de serviços de borda (DNS/DHCP/Mail).
+
+## 🎯 Business Value & Resiliência
+O objetivo central deste backbone é garantir **Zero Data Loss** através de redundância de hardware via software (RAID) e **Autonomia de Rede**, estabelecendo serviços autoritativos locais que independem de conexões externas para a operação interna da empresa.
 
 ---
 
-## Stack Tecnológica & Topologia
-* **Distribuições:** Rocky Linux 9 & Ubuntu Server
-* **Armazenamento:** RAID 1, RAID 10 e LVM2
-* **Segurança:** GRUB2 (Hardening com PBKDF2)
+## Stack Tecnológica & Matriz de Arquitetura
+* **Sistemas Operacionais:** Rocky Linux 9 (Core Services) & Ubuntu Server.
+* **Storage:** RAID 1, RAID 10 (mdadm) e LVM2 (Logical Volume Management).
+* **Network Services:** BIND9 (DNS), ISC DHCP Server, Dovecot (IMAP/POP3), vsftpd.
+* **Segurança:** GRUB2 Hardening (PBKDF2) e Firewalling de Borda.
 
-### Topologia da Rede
-<details>
-  <summary>📂 Clique para ver o Diagrama de Backbone</summary>
-
-  ![Diagrama de Backbone](./docs/assets/backbone-topology-diagram.png)
-</details>
-
-### Endereçamento e Funções
-| Serviço | Interface | Rede/Volume | Função |
+### Matriz de Serviços de Backbone
+| Camada | Tecnologia | Estratégia de Resiliência | Função no Ecossistema |
 | :--- | :--- | :--- | :--- |
-| **DHCP/DNS Server** | eth1 | 192.168.10.0/24 | Gestão de Identidade e IPs da Rede |
-| **Mirroring Storage** | md1 | RAID 1 (2 Discos) | Dados Críticos e Redundância |
-| **Performance Cluster**| md127| RAID 10 (4 Discos)| Alta Performance e Tolerância a Falhas |
-| **LVM Snapshots** | vg_dados| lv_backups | Salvaguarda de Dados (Point-in-Time) |
+| **Storage Mirror** | RAID 1 | Redundância de Disco (Mirroring) | Proteção de Dados Críticos |
+| **Performance Disk**| RAID 10 | Stripping + Mirroring | Alta Performance e Tolerância a Falhas |
+| **Logical Storage** | LVM2 | Snapshots / Hot-Resize | Flexibilidade de Expansão sem Downtime |
+| **IP Management** | DHCP Server | Escopo Autoritativo | Governança de Endereçamento |
+| **Naming Service** | BIND9 DNS | Master Zone / Reverse Lookup | Resolução de Nomes e Identidade de Rede |
 
 ---
 
-## 📁 1. Gestão de Endereçamento e Serviços de Borda
+## 📁 1. Gestão de Borda (DNS & DHCP Autoritativo)
 
 ### Contexto do Problema
-O ecossistema demandava serviços autoritativos locais para gestão dinâmica de IPs, resolução de nomes de domínio e mensageria interna sem depender de gateways públicos.
+A necessidade de uma rede interna organizada exige que o servidor gerencie dinamicamente os IPs e resolva nomes locais (`atlas.gabriel.lab`) para evitar o uso de IPs "hardcoded" em aplicações.
 
-### Troubleshooting e Resolução
-Durante o provisionamento do DNS Master, zonas reversas apresentaram falha de resolução (`NXDOMAIN`).
-* **Causa Raiz:** Inconsistência de sintaxe no arquivo de zona e permissões de leitura do daemon `named`.
-* **Solução Aplicada:** Ajuste de propriedade do grupo para `named` e correção do serial no arquivo de zona.
+### Troubleshooting (Causa Raiz)
+* **Incidente:** Falha de resolução `NXDOMAIN` no Master Zone.
+* **Resolução:** Correção da hierarquia de permissões no diretório `/var/named` e ajuste de sintaxe no arquivo de zona reversa para alinhar o PTR ao endereçamento estático.
 
 ### Evidência Técnica
 <details>
-  <summary>📂 Clique para ver a validação de DNS, DHCP, FTP e Mail</summary>
+  <summary>📂 Clique para ver a Validação de Borda</summary>
 
-  * **DHCP Status:** ![Operacional](./docs/assets/02-atlas-dhcp-validation-and-status.png)
-  * **DNS Zone:** ![DNS Zone](./docs/assets/DNS_Validation_Master_Zone.png)
-  * **Mail IMAP:** ![Dovecot Status](./docs/assets/Dovecot_IMAP_POP3_Verification.png)
-  * **FTP Final:** ![FTP Success](./docs/assets/FTP_Final_Success.png)
+  * **DHCP Operacional:** ![DHCP Status](./docs/assets/02-atlas-dhcp-validation-and-status.png)
+  * **Resolução DNS Master:** ![DNS Validation](./docs/assets/DNS_Validation_Master_Zone.png)
 </details>
 
 ---
 
-## 📁 2. Armazenamento de Alta Disponibilidade (RAID 1, 10 & LVM)
+## 📁 2. Armazenamento Flexível (LVM & XFS Expansion)
 
 ### Contexto do Problema
-Garantir persistência de dados e tolerância a falhas de hardware no nível dos discos físicos. O desafio era balancear escrita rápida e redundância espelhada.
+Servidores de arquivos e logs crescem de forma imprevisível. O sistema precisava de uma camada de abstração que permitisse aumentar o espaço em disco com o sistema montado.
 
-### Troubleshooting e Resolução
-Necessidade de expansão de storage sem causar downtime nas aplicações de produção.
-* **Causa Raiz:** O limite do disco físico foi atingido.
-* **Solução Aplicada:** Alocação de novos volumes LVM, redimensionamento dinâmico via `lvextend` e expansão do file system via `xfs_growfs` em tempo real.
-
----
-
-## 📁 3. [GOLDEN EVIDENCE] SRE Troubleshooting: Resiliência de Dados
-
-### Contexto do Problema
-Tratamento de incidente real de simulação de falha catastrófica em um disco do array RAID 1 (`sdi`).
-
-### Troubleshooting e Resolução (Hands-on SRE)
-1. **Identificação:** O sistema sinalizou degradação de array no status `[U_]` do device `md1`.
-2. **Mitigação (Snapshot):** Antes do reparo do bloco de metal, foi executado o script `lvm_snapshot_backup.sh` para criar um ponto de restauração seguro dos dados lógicos.
-3. **Resolução:** Isolamento do disco `faulty`, remoção a quente e início do `rebuild` via utilitário `mdadm`.
+### Troubleshooting (Hot-Resize)
+* **Solução Aplicada:** Uso de `lvextend` seguido de `xfs_growfs`. Diferente do EXT4, o XFS exige que o volume esteja montado para ser expandido, garantindo a continuidade do serviço.
 
 ### Evidência Técnica
 <details>
-  <summary>📂 Clique para ver o Incidente e o Rebuild do RAID</summary>
+  <summary>📂 Clique para ver o Ciclo LVM</summary>
 
-  * **O Incidente:** ![RAID Degradado](./docs/assets/sre-incident-raid-degradation.png)
-  * **A Resolução:** ![Snapshot e Rebuild](./docs/assets/sre-troubleshoot-lvm-raid-resilience.png)
+  * **Provisionamento XFS:** ![LVM Step 01](./docs/assets/step-01-lvm-provisioning-xfs.png)
+  * **Hot-Resize Success:** ![XFS Growfs](./docs/assets/xfs-growfs-success-metadata-lv-backups.png)
+  * **Verificação Final:** ![DF-H Verification](./docs/assets/df-h-final-verification-lv-backups-1.1G.png)
 </details>
 
 ---
 
-## 📁 4. Hardening de Bootloader (GRUB2 Security)
+## 📁 3. [GOLDEN EVIDENCE] SRE Incident: RAID 1 Disaster Recovery
 
 ### Contexto do Problema
-Vetores de ataque físicos (Direct Access) permitindo que agentes maliciosos quebrem a senha de root editando os parâmetros do Kernel na inicialização.
+Simulação de falha física catastrófica em um dos discos (`sdi`) do array de espelhamento que sustenta o banco de dados.
 
-### Troubleshooting e Resolução
-* **Solução Aplicada:** Implementação de assinatura criptográfica via Hash **PBKDF2**, forçando a autenticação de usuário administrativo antes de qualquer edição do GRUB.
+### Troubleshooting & Resolução (SRE Hands-on)
+1. **Identificação:** Detecção de estado degradado `[U_]` via `/proc/mdstat`.
+2. **Isolamento:** Marcação do disco como `faulty` e remoção lógica do array.
+3. **Rebuild:** Inserção de novo disco e monitoramento da sincronização de blocos em tempo real para restaurar a redundância `[UU]`.
 
 ### Evidência Técnica
 <details>
-  <summary>📂 Clique para ver a trava de segurança do GRUB</summary>
+  <summary>📂 Clique para ver o Rebuild do RAID</summary>
 
-  ![GRUB Config](./docs/assets/grub-security-config-pbkdf2.png)
+  * **Array Degradado:** ![RAID Incident](./docs/assets/sre-incident-raid-degradation.png)
+  * **Processo de Rebuild:** ![RAID Recovery](./docs/assets/mdadm-raid1-recovery-rebuild.png)
+  * **Visão Integrada (lsblk):** ![Storage Final](./docs/assets/lsblk-integrated-storage-final.png)
 </details>
 
 ---
 
-## Automações de Infraestrutura (Scripts Bash)
+## 📁 4. Deep Dive Networking: Análise de MTU e Latência
 
-Scripts desenvolvidos para garantir a operabilidade e manutenibilidade do Backbone:
+### Contexto do Problema
+Diagnosticar gargalos de rede que impedem a transferência eficiente de pacotes grandes ou causam fragmentação excessiva.
 
-* **[setup_backbone_storage.sh](./scripts/setup_backbone_storage.sh):** Provisionamento automático de RAID, VG e File Systems.
-* **[monitor_backbone_health.sh](./scripts/monitor_backbone_health.sh):** Verificação ativa de saúde do RAID.
-* **[lvm_snapshot_backup.sh](./scripts/lvm_snapshot_backup.sh):** Gestão de Rollback e Point-in-time Recovery.
+### Investigação Técnica
+Uso de **MTU Path Discovery** para identificar o tamanho máximo de frame sem fragmentação e análise de saltos via **MTR** para detectar pacotes descartados em gateways intermediários.
 
+### Evidência Técnica
 <details>
-  <summary>📂 Clique para ver os logs das automações</summary>
+  <summary>📂 Clique para ver o Diagnóstico de Rede</summary>
 
-  ![Sessão](./docs/assets/readme-structure-backbone-v2.png)
+  * **Falha (MTU 1500):** ![MTU Fail](./docs/assets/evidence-mtu-fragmentation-fail-1500.png)
+  * **Sucesso (MTU 1480):** ![MTU Success](./docs/assets/evidence-mtu-discovery-success-1480.png)
+  * **Análise Hop-by-Hop:** ![MTR Analysis](./docs/assets/evidence-mtr-analysis-backbone-google.png)
 </details>
+
+---
+
+## 📁 5. Security Hardening: GRUB2 & PBKDF2
+
+### Contexto do Problema
+Proteção física contra "Single User Mode Break-ins". Impedir que o Kernel seja manipulado no boot sem autenticação de alto nível.
+
+### Resolução
+Implementação de criptografia de senha no bootloader utilizando o algoritmo de derivação de chave **PBKDF2**, garantindo resistência contra ataques de dicionário ao arquivo de configuração do GRUB.
+
+### Evidência Técnica
+<details>
+  <summary>📂 Clique para ver a Trava do Bootloader</summary>
+
+  * **Hash PBKDF2:** ![GRUB Security](./docs/assets/grub-security-config-pbkdf2.png)
+  * **Update Config:** ![GRUB UEFI Update](./docs/assets/grub-mkconfig-uefi-update.png)
+</details>
+
+---
+
+## 📁 6. Legacy Services & Security (Mail & FTP)
+
+### Contexto do Problema
+Manter serviços de comunicação clássicos (Dovecot/vsftpd) operando sob monitoramento rigoroso e validação de protocolos.
+
+### Evidência Técnica
+<details>
+  <summary>📂 Clique para ver a Validação de Serviços</summary>
+
+  * **IMAP/POP3 Verification:** ![Dovecot Status](./docs/assets/Dovecot_IMAP_POP3_Verification.png)
+  * **FTP DNS Integration:** ![FTP Success](./docs/assets/FTP_Integration_DNS_Validation_Transfer.png)
+  * **Audit Alert (Security):** ![FTP Alert](./docs/assets/FTP_Security_Alert.png)
+</details>
+
+---
+
+> [!NOTE]
+> **SRE Insight: O Custo do "Omission Error"**
+> Durante o laboratório de fdisk, o sistema emitiu um alerta de "Disk in use". A decisão de SRE foi interromper a operação, desmontar os volumes e limpar o cache de escrita, evitando a corrupção da tabela de partições que causaria perda total do array.
+> ![Fdisk Warning](./docs/assets/fdisk-warning-disk-in-use-sdc.png)
